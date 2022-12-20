@@ -33,3 +33,10 @@ macro_rules! locale {
         crate::locale()
     };
 }
+
+#[macro_export]
+macro_rules! auto_detect {
+    () => {
+        r18::detect_locale().map(|l| r18::set_locale!(l))
+    };
+}

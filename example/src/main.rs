@@ -17,4 +17,7 @@ fn main() {
             )
         )
     );
+
+    r18::auto_detect!();
+    println!("{}", r18::tr!("Hello, {}", name));
 }
