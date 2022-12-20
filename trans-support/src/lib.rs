@@ -35,11 +35,9 @@ fn extract_value(prefix: String, object: Value) -> HashMap<String, String> {
         Value::Array(arr) => arr.into_iter().enumerate().for_each(|(i, v)| {
             ret.extend(extract_value(format!("{}.{}", prefix, i), v));
         }),
-        Value::Object(obj) => {
-            for (k, v) in obj.into_iter() {
-                ret.extend(extract_value(format!("{}.{}", prefix, k), v));
-            }
-        }
+        Value::Object(obj) => obj
+            .into_iter()
+            .for_each(|(k, v)| ret.extend(extract_value(format!("{}.{}", prefix, k), v))),
     }
 
     ret
