@@ -1,1 +1,54 @@
 # 🔞
+
+`r18` is a crate for internationalized Rust projects.
+
+## Usage
+
+Add `r18` to your project's dependencies.
+
+```toml
+[dependencies]
+r18 = "0.1"
+```
+
+Create a `JSON` translation file whose name format is `BCP 47` language tag in a directory and write it as follows:
+
+```json
+// ./tr/zh-CN.json
+{
+    "Hello, {}": "你好，{}"
+}
+```
+
+Then add `r18::init!` to the global area of your code with the translation file directory path (is `./tr` in this example) relative to your project root.
+
+```rust
+r18::init!("tr");
+```
+
+After initialization, use `auto_detect!` to detect locale and load translation model (optional, you can use `set_locale!` to set locale manually), then use `tr!` to translate your text which has been translated.
+
+```rust
+r18::init!("tr");
+
+fn main() {
+    r18::auto_detect!();
+
+    let name = "ho-229";
+    println!("{}", tr!("Hello, {}", name));
+
+    // reset locale to disable translation
+    r18::set_locale!("");
+    assert_eq!("Hello, ho-229", tr!("Hello, {}", name));
+}
+```
+
+For a complete example, you can see [here](./example/). you can run the example with:
+
+```shell
+cargo run -p example
+```
+
+## Alternative
+
+* [rust-i18n](https://github.com/longbridgeapp/rust-i18n)
