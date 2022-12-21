@@ -37,6 +37,6 @@ macro_rules! locale {
 #[macro_export]
 macro_rules! auto_detect {
     () => {
-        r18::detect_locale().map(|l| r18::set_locale!(l))
+        r18::get_locale().map(|l| r18::set_locale!(l))
     };
 }

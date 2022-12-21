@@ -9,6 +9,7 @@ edition = "2021"
 mod_use = "0.2"
 once_cell = "1.16"
 dynfmt = { version = "0.1.5", default-features = false, features = ["curly"] }
+sys-locale = "0.2"
 
 proc-macros = { path = "./proc-macros" }
 

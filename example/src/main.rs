@@ -15,7 +15,7 @@ mod tests {
         r18::set_locale!("");
         assert_eq!(format!("Hello, {}", name), r18::tr!("Hello, {}", name));
 
-        r18::set_locale!("zh_CN");
+        r18::set_locale!("zh-CN");
         assert_eq!(format!("你好，{}", name), r18::tr!("Hello, {}", name));
         assert_eq!(
             format!(
