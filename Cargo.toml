@@ -2,8 +2,16 @@
 name = "r18"
 version = "0.1.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "A simply I18n crate for Rust."
+license = "MIT"
+repository = "https://github.com/Limit-IM/r18"
+keywords = ["i18n", "l10n", "internationalization"]
+categories = ["i18n", "l10n", "internationalization", "proc-macro", "json"]
+readme = "README.md"
+authors = [
+    "ho229v3666@gmail.com",
+]
+exclude = [".github", "example"]
 
 [dependencies]
 mod_use = "0.2"
@@ -11,7 +19,7 @@ once_cell = "1.16"
 dynfmt = { version = "0.1.5", default-features = false, features = ["curly"] }
 sys-locale = "0.2"
 
-proc-macros = { path = "./proc-macros" }
+r18-proc-macros = { path = "./proc-macros", version = "0.1" }
 
 [workspace]
 members = [

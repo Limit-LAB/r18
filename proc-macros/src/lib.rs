@@ -64,7 +64,7 @@ pub fn init(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 
 fn generate_language(language: &str, path: impl AsRef<Path>) -> proc_macro2::TokenStream {
     let code = format_ident!("{}", language.to_uppercase().replace("-", "_"));
-    let translation = trans_support::import(path)
+    let translation = r18_trans_support::import(path)
         .into_iter()
         .map(|(k, v)| quote!( (#k, #v) ))
         .collect::<Vec<_>>();

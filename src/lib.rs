@@ -51,7 +51,7 @@ pub use dynfmt::{Format, SimpleCurlyFormat};
 pub use once_cell::sync::Lazy;
 pub use sys_locale::get_locale;
 
-pub use proc_macros::init;
+pub use r18_proc_macros::init;
 
 pub struct Locale {
     pub name: &'static str,

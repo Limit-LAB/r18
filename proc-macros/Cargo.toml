@@ -1,12 +1,17 @@
 [package]
-name = "proc-macros"
+name = "r18-proc-macros"
 version = "0.1.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "r18 procedure macros"
+license = "MIT"
+repository = "https://github.com/Limit-IM/r18"
+readme = "../README.md"
+authors = [
+    "ho229v3666@gmail.com",
+]
 
 [dependencies]
-trans-support = { path = "../trans-support" }
+r18-trans-support = { path = "../trans-support", version = "0.1"}
 
 glob = "0.3"
 proc-macro2 = "1.0"
