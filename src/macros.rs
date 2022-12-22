@@ -1,3 +1,26 @@
+/// Translate and content formatting.
+/// 
+/// ## Example
+/// 
+/// Assume that translate file are as follows:
+/// 
+/// ```json
+/// {
+///     "Hello, {}": "Hello, {}",
+///     "birthday": {
+///         "Hello, {}": "Happy birthday, {}"
+///     }
+/// }
+/// ```
+/// 
+/// [`tr!`] will work like:
+/// 
+/// ```ignore
+/// let name = "ho-229";
+/// assert_eq!("Hello, ho-229", r18::tr!("Hello, {}", name));
+/// assert_eq!("Hello, ho-229", r18::tr!([""] "Hello, {}", name));
+/// assert_eq!("Happy birthday, ho-229", r18::tr!([".birthday"] "Hello, {}", name));
+/// ```
 #[macro_export]
 macro_rules! tr {
     ($content:expr) => {
@@ -18,6 +41,19 @@ macro_rules! tr {
     }};
 }
 
+/// Sets the current locale.
+/// 
+/// If the input language tag is invalid or not translated, 
+/// the translation will be disabled.
+/// 
+/// ## Example
+/// 
+/// ```ignore
+/// r18::set_locale!("zh-CN");   // assume the zh-CN has been translated
+/// assert_eq(Some("zh-CN"), r18::locale!());
+/// r18::set_locale!("");
+/// assert_eq(None, r18::locale!());
+/// ```
 #[macro_export]
 macro_rules! set_locale {
     ($locale:expr) => {
@@ -26,6 +62,7 @@ macro_rules! set_locale {
     };
 }
 
+/// Returns the current locale.
 #[macro_export]
 macro_rules! locale {
     () => {
@@ -34,6 +71,7 @@ macro_rules! locale {
     };
 }
 
+/// Automatically sets the current locale.
 #[macro_export]
 macro_rules! auto_detect {
     () => {

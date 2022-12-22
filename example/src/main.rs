@@ -12,10 +12,13 @@ mod tests {
     #[test]
     fn functional_test() {
         let name = "ho-229";
+
         r18::set_locale!("");
+        assert_eq!(None, r18::locale!());
         assert_eq!(format!("Hello, {}", name), r18::tr!("Hello, {}", name));
 
         r18::set_locale!("zh-CN");
+        assert_eq!(Some("zh-CN"), r18::locale!());
         assert_eq!(format!("你好，{}", name), r18::tr!("Hello, {}", name));
         assert_eq!(
             format!(
@@ -25,7 +28,10 @@ mod tests {
             r18::tr!([".pua"] "Hello, {}", name)
         );
         assert_eq!(
-            r#"调试：Custom { kind: Other, error: "An error" }"#,
+            format!(
+                "调试：{:?}",
+                std::io::Error::new(std::io::ErrorKind::Other, "An error")
+            ),
             r18::tr!(
                 "Debug: {}",
                 format!(
