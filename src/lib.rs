@@ -47,17 +47,22 @@
 
 use std::{collections::HashMap, sync::Mutex};
 
+#[doc(hidden)]
 pub use dynfmt::{Format, SimpleCurlyFormat};
+#[doc(hidden)]
 pub use once_cell::sync::Lazy;
+#[doc(hidden)]
 pub use sys_locale::get_locale;
 
 pub use r18_proc_macros::init;
 
+#[doc(hidden)]
 pub struct Locale {
     pub name: &'static str,
     pub translate: HashMap<&'static str, &'static str>,
 }
 
+#[doc(hidden)]
 pub static CURRENT_LOCALE: Lazy<Mutex<Option<&'static Lazy<Locale>>>> =
     Lazy::new(|| Mutex::new(None));
 

@@ -6,7 +6,7 @@ description = "A simply I18n crate for Rust."
 license = "MIT"
 repository = "https://github.com/Limit-IM/r18"
 keywords = ["i18n", "l10n", "internationalization"]
-categories = ["i18n", "l10n", "internationalization", "proc-macro", "json"]
+categories = ["localization", "internationalization"]
 readme = "README.md"
 authors = [
     "ho229v3666@gmail.com",

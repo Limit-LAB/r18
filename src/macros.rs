@@ -50,9 +50,9 @@ macro_rules! tr {
 /// 
 /// ```ignore
 /// r18::set_locale!("zh-CN");   // assume the zh-CN has been translated
-/// assert_eq(Some("zh-CN"), r18::locale!());
+/// assert_eq!(Some("zh-CN"), r18::locale!());
 /// r18::set_locale!("");
-/// assert_eq(None, r18::locale!());
+/// assert_eq!(None, r18::locale!());
 /// ```
 #[macro_export]
 macro_rules! set_locale {
