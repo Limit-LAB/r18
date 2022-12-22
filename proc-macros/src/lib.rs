@@ -3,6 +3,8 @@ use std::path::{Path, PathBuf};
 use glob::glob;
 use quote::{format_ident, quote};
 
+use oxilangtag::LanguageTag;
+
 struct PathStr(String);
 
 impl syn::parse::Parse for PathStr {
@@ -11,15 +13,15 @@ impl syn::parse::Parse for PathStr {
     }
 }
 
-/// Generate translation models and functions `set_locale` and `locale` to setup `r18` 
-/// environment with given translation directory.
-/// 
-/// ***WARN***: This macro will generate some global variants as translation models 
-/// and functions which named `set_locale` and `locale` on your crate. 
+/// Generate translation models and functions `set_locale` and `locale` to setup `r18`
+///  environment with given translation directory.
+///
+/// ***WARN***: This macro will generate some global variants as translation models
+///  and functions which named `set_locale` and `locale` on your crate.
 /// Be careful with namespace pollution.
-/// 
+///
 /// ## Example
-/// 
+///
 /// ```ignore
 /// r18::init!("tr");
 /// ```
@@ -53,8 +55,10 @@ pub fn init(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                 .expect("Cannot found language code")
                 .to_string();
 
-            token.extend(generate_language(&language, p).into_iter());
-            languages.push(language);
+            if let Ok(language) = LanguageTag::parse_and_normalize(&language) {
+                token.extend(generate_language(&language, p).into_iter());
+                languages.push(language);
+            }
         });
 
     token.extend(generate_locale(languages).into_iter());
@@ -79,17 +83,44 @@ fn generate_language(language: &str, path: impl AsRef<Path>) -> proc_macro2::Tok
     }
 }
 
-fn generate_locale(languages: Vec<String>) -> proc_macro2::TokenStream {
-    let lang_idents = languages
+fn generate_locale(languages: Vec<LanguageTag<String>>) -> proc_macro2::TokenStream {
+    let lang_match = languages
         .iter()
-        .map(|l| format_ident!("{}", l.to_uppercase().replace("-", "_")))
-        .collect::<Vec<_>>();
+        .map(|l| {
+            (
+                l,
+                format_ident!("{}", (&l).to_uppercase().replace("-", "_")),
+            )
+        })
+        .fold(
+            proc_macro2::TokenStream::new(),
+            |mut stream, (lang, ident)| {
+                let (primary, region) = (lang.primary_language(), lang.region());
+
+                if let Some(region) = region {
+                    stream.extend(
+                        quote! { (#primary, Some(#region)) => Some(& #ident) , }.into_iter(),
+                    );
+                }
+
+                stream.extend(quote! { (#primary, None) => Some(& #ident) , }.into_iter());
+
+                stream
+            },
+        );
 
     quote! {
         fn set_locale(locale: impl AsRef<str>) {
-            *r18::CURRENT_LOCALE.lock().unwrap() = match locale.as_ref() {
-                #(#languages => Some(& #lang_idents),)*
-                _ => None,
+            *r18::CURRENT_LOCALE
+                .lock()
+                .unwrap() = match r18::LanguageTag::parse_and_normalize(locale.as_ref()) {
+                Ok(lang) => {
+                    match (lang.primary_language(), lang.region()) {
+                        #lang_match
+                        _ => None,
+                    }
+                }
+                Err(_) => None,
             };
         }
 
