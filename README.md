@@ -1,5 +1,9 @@
 # 🔞
 
+[![crate.io](https://img.shields.io/crates/v/r18.svg)](https://crates.io/crates/r18)
+[![docs](https://docs.rs/r18/badge.svg)](https://docs.rs/r18)
+[![build](https://github.com/Limit-IM/r18/actions/workflows/rust.yml/badge.svg)](https://github.com/Limit-IM/r18/actions/workflows/rust.yml)
+
 `r18` is a crate for internationalized Rust projects.
 
 ## Usage
