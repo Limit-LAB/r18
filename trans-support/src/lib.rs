@@ -10,10 +10,8 @@ pub fn import(path: impl AsRef<Path>) -> HashMap<String, String> {
         .read_to_string(&mut content)
         .expect("Failed to read translation file");
 
-    let root = serde_json::from_str::<Value>(&content).expect(&format!(
-        "Failed to parse file: {}",
-        path.as_ref().display()
-    ));
+    let root = serde_json::from_str::<Value>(&content)
+        .unwrap_or_else(|_| panic!("Failed to parse file: {}", path.as_ref().display()));
 
     extract_value(String::new(), root)
 }

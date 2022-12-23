@@ -47,7 +47,7 @@ pub fn init(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                 .file_stem()
                 .and_then(|p| p.to_str())
                 .and_then(|p| p.split('.').last())
-                .and_then(|p| LanguageTag::parse_and_normalize(&p).ok())?;
+                .and_then(|p| LanguageTag::parse_and_normalize(p).ok())?;
 
             let ret = generate_one_locale(&language, path);
             languages.push(language);
@@ -91,7 +91,7 @@ fn generate_helpers(languages: &[LanguageTag<String>]) -> proc_macro2::TokenStre
     let lang_match = languages
         .iter()
         .fold(proc_macro2::TokenStream::new(), |mut stream, lang| {
-            let ident = format_ident!("{}", (&lang).to_uppercase().replace("-", "_"));
+            let ident = format_ident!("{}", lang.to_uppercase().replace('-', "_"));
             let (primary, region) = (lang.primary_language(), lang.region());
 
             if let Some(region) = region {
