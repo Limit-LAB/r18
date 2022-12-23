@@ -17,8 +17,16 @@ mod tests {
         assert_eq!(None, r18::locale!());
         assert_eq!(format!("Hello, {}", name), r18::tr!("Hello, {}", name));
 
-        r18::set_locale!("zh-CN");
+        r18::set_locale!("zh-TW");
+        assert_eq!(Some("zh-TW"), r18::locale!());
+        assert_eq!(format!("妳好，{}", name), r18::tr!("Hello, {}", name));
+
+        r18::set_locale!("zh-cn");
         assert_eq!(Some("zh-CN"), r18::locale!());
+
+        r18::set_locale!("zh");
+        assert_eq!(Some("zh-CN"), r18::locale!()); // zh-CN has higher priority than zh-TW
+
         assert_eq!(format!("你好，{}", name), r18::tr!("Hello, {}", name));
         assert_eq!(
             format!(

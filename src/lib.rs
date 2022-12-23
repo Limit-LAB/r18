@@ -54,10 +54,13 @@ pub use dynfmt::{Format, SimpleCurlyFormat};
 #[doc(hidden)]
 pub use once_cell::sync::Lazy;
 #[doc(hidden)]
+pub use oxilangtag::{LanguageTag, LanguageTagParseError};
+#[doc(hidden)]
 pub use phf;
-pub use r18_proc_macros::init;
 #[doc(hidden)]
 pub use sys_locale::get_locale;
+
+pub use r18_proc_macros::init;
 
 mod_use::mod_use!(macros);
 

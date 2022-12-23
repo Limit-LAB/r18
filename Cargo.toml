@@ -17,6 +17,7 @@ exclude = [".github", "example"]
 mod_use = "0.2"
 once_cell = "1.16"
 sys-locale = "0.2"
+oxilangtag = "0.1"
 phf = { version = "0.11.1", features = ["macros"] }
 dynfmt = { version = "0.1.5", default-features = false, features = ["curly"] }
 

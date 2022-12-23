@@ -3,6 +3,8 @@ use std::path::{Path, PathBuf};
 use glob::glob;
 use quote::{format_ident, quote};
 
+use oxilangtag::LanguageTag;
+
 struct PathStr(String);
 
 impl syn::parse::Parse for PathStr {
@@ -38,18 +40,18 @@ pub fn init(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let mut languages = vec![];
     let locales = glob(&format!("{}/**/*.json", path.display()))
         .expect("Failed to read glob pattern")
-        .filter_map(|p| p.ok())
-        .map(|p| {
-            let language = p
+        .filter_map(|p| {
+            let path = p.ok()?;
+
+            let language = path
                 .file_stem()
                 .and_then(|p| p.to_str())
                 .and_then(|p| p.split('.').last())
-                .expect("Cannot find language code")
-                .to_string();
+                .and_then(|p| LanguageTag::parse_and_normalize(p).ok())?;
 
-            let ret = generate_one_locale(&language, p);
+            let ret = generate_one_locale(&language, path);
             languages.push(language);
-            ret
+            Some(ret)
         })
         .collect::<proc_macro2::TokenStream>();
 
@@ -70,7 +72,6 @@ fn generate_one_locale(language: &str, path: impl AsRef<Path>) -> proc_macro2::T
     let translation = r18_trans_support::import(path)
         .into_iter()
         .map(|(k, v)| quote!( #k => #v ));
-    // let translation = quote!( );
 
     quote! {
         #[doc(hidden)]
@@ -86,18 +87,35 @@ fn generate_one_locale(language: &str, path: impl AsRef<Path>) -> proc_macro2::T
     }
 }
 
-fn generate_helpers(languages: &[String]) -> proc_macro2::TokenStream {
-    let lang_idents = languages
+fn generate_helpers(languages: &[LanguageTag<String>]) -> proc_macro2::TokenStream {
+    let lang_match = languages
         .iter()
-        .map(|l| format_ident!("{}", l.to_uppercase().replace('-', "_")))
-        .collect::<Vec<_>>();
+        .fold(proc_macro2::TokenStream::new(), |mut stream, lang| {
+            let ident = format_ident!("{}", lang.to_uppercase().replace('-', "_"));
+            let (primary, region) = (lang.primary_language(), lang.region());
+
+            if let Some(region) = region {
+                stream.extend(quote! { (#primary, Some(#region)) => Some(& #ident) , }.into_iter());
+            }
+
+            stream.extend(quote! { (#primary, None) => Some(& #ident) , }.into_iter());
+
+            stream
+        });
 
     quote! {
         #[doc(hidden)]
         pub(crate) fn set_locale(locale: impl AsRef<str>) {
-            *r18::CURRENT_LOCALE.lock().unwrap() = match locale.as_ref() {
-                #(#languages => Some(& #lang_idents),)*
-                _ => None,
+            *r18::CURRENT_LOCALE
+                .lock()
+                .unwrap() = match r18::LanguageTag::parse_and_normalize(locale.as_ref()) {
+                Ok(lang) => {
+                    match (lang.primary_language(), lang.region()) {
+                        #lang_match
+                        _ => None,
+                    }
+                }
+                Err(_) => None,
             };
         }
     }
