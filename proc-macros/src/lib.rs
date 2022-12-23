@@ -14,10 +14,6 @@ impl syn::parse::Parse for PathStr {
 /// Generate translation models and functions `set_locale` and `locale` to setup
 /// `r18` environment with given translation directory.
 ///
-/// ***WARN***: This macro will generate some global variants as translation
-/// models and functions which named `set_locale` and `locale` on your crate.
-/// Be careful with namespace pollution.
-///
 /// ## Example
 ///
 /// ```ignore
@@ -39,13 +35,11 @@ pub fn init(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
         Err(e) => return e.to_compile_error().into(),
     };
 
-    let mut token = proc_macro2::TokenStream::new();
-    let mut languages = Vec::new();
-
-    glob(&format!("{}/**/*.json", path.display()))
+    let mut languages = vec![];
+    let locales = glob(&format!("{}/**/*.json", path.display()))
         .expect("Failed to read glob pattern")
         .filter_map(|p| p.ok())
-        .for_each(|p| {
+        .map(|p| {
             let language = p
                 .file_stem()
                 .and_then(|p| p.to_str())
@@ -53,48 +47,58 @@ pub fn init(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                 .expect("Cannot find language code")
                 .to_string();
 
-            token.extend(generate_language(&language, p).into_iter());
+            let ret = generate_one_locale(&language, p);
             languages.push(language);
-        });
+            ret
+        })
+        .collect::<proc_macro2::TokenStream>();
 
-    token.extend(generate_locale(languages).into_iter());
-
-    token.into()
-}
-
-fn generate_language(language: &str, path: impl AsRef<Path>) -> proc_macro2::TokenStream {
-    let code = format_ident!("{}", language.to_uppercase().replace("-", "_"));
-    let translation = r18_trans_support::import(path)
-        .into_iter()
-        .map(|(k, v)| quote!( (#k, #v) ))
-        .collect::<Vec<_>>();
+    let locale_helpers = generate_helpers(&languages);
 
     quote! {
-        static #code: r18::Lazy<r18::Locale> = r18::Lazy::new(|| r18::Locale {
+        #[doc(hidden)]
+        pub(crate) mod __r18_gen {
+            #locales
+            #locale_helpers
+        }
+    }
+    .into()
+}
+
+fn generate_one_locale(language: &str, path: impl AsRef<Path>) -> proc_macro2::TokenStream {
+    let code = format_ident!("{}", language.to_uppercase().replace('-', "_"));
+    let translation = r18_trans_support::import(path)
+        .into_iter()
+        .map(|(k, v)| quote!( #k => #v ));
+    // let translation = quote!( );
+
+    quote! {
+        #[doc(hidden)]
+        const #code: r18::Locale = r18::Locale {
             name: #language,
-            translate: [ #(#translation),* ]
-                .into_iter()
-                .collect(),
-        });
+            translate: {
+                use r18::phf;
+                phf::phf_map! {
+                    #( #translation ),*
+                }
+            }
+        };
     }
 }
 
-fn generate_locale(languages: Vec<String>) -> proc_macro2::TokenStream {
+fn generate_helpers(languages: &[String]) -> proc_macro2::TokenStream {
     let lang_idents = languages
         .iter()
-        .map(|l| format_ident!("{}", l.to_uppercase().replace("-", "_")))
+        .map(|l| format_ident!("{}", l.to_uppercase().replace('-', "_")))
         .collect::<Vec<_>>();
 
     quote! {
-        fn set_locale(locale: impl AsRef<str>) {
+        #[doc(hidden)]
+        pub(crate) fn set_locale(locale: impl AsRef<str>) {
             *r18::CURRENT_LOCALE.lock().unwrap() = match locale.as_ref() {
                 #(#languages => Some(& #lang_idents),)*
                 _ => None,
             };
-        }
-
-        fn locale() -> Option<&'static str> {
-            r18::CURRENT_LOCALE.lock().unwrap().as_ref().map(|l| l.name)
         }
     }
 }

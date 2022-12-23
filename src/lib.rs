@@ -47,31 +47,34 @@
 //! }
 //! ```
 
-use std::{collections::HashMap, sync::Mutex};
+use std::sync::Mutex;
 
 #[doc(hidden)]
 pub use dynfmt::{Format, SimpleCurlyFormat};
 #[doc(hidden)]
 pub use once_cell::sync::Lazy;
+#[doc(hidden)]
+pub use phf;
 pub use r18_proc_macros::init;
 #[doc(hidden)]
 pub use sys_locale::get_locale;
 
+mod_use::mod_use!(macros);
+
 #[doc(hidden)]
 pub struct Locale {
     pub name: &'static str,
-    pub translate: HashMap<&'static str, &'static str>,
+    pub translate: phf::Map<&'static str, &'static str>,
 }
 
 #[doc(hidden)]
-pub static CURRENT_LOCALE: Lazy<Mutex<Option<&'static Lazy<Locale>>>> =
-    Lazy::new(|| Mutex::new(None));
+pub static CURRENT_LOCALE: Lazy<Mutex<Option<&'static Locale>>> = Lazy::new(|| Mutex::new(None));
 
 /// Translate content with the locale setting and given prefix.
 ///
 /// We recommend using [`tr!`] instead of [`translate`] for translate your
 /// content.
-pub fn translate<'a>(prefix: impl AsRef<str>, content: &'a str) -> &'a str {
+pub fn translate(prefix: impl AsRef<str>, content: &str) -> &str {
     let locale = CURRENT_LOCALE.lock().unwrap();
     let locale = match *locale {
         Some(l) => l,
@@ -86,5 +89,3 @@ pub fn translate<'a>(prefix: impl AsRef<str>, content: &'a str) -> &'a str {
         None => content,
     }
 }
-
-mod_use::mod_use!(macros);
