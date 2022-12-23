@@ -11,15 +11,15 @@ impl syn::parse::Parse for PathStr {
     }
 }
 
-/// Generate translation models and functions `set_locale` and `locale` to setup `r18` 
-/// environment with given translation directory.
-/// 
-/// ***WARN***: This macro will generate some global variants as translation models 
-/// and functions which named `set_locale` and `locale` on your crate. 
+/// Generate translation models and functions `set_locale` and `locale` to setup
+/// `r18` environment with given translation directory.
+///
+/// ***WARN***: This macro will generate some global variants as translation
+/// models and functions which named `set_locale` and `locale` on your crate.
 /// Be careful with namespace pollution.
-/// 
+///
 /// ## Example
-/// 
+///
 /// ```ignore
 /// r18::init!("tr");
 /// ```
