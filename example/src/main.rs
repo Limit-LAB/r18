@@ -27,6 +27,9 @@ mod tests {
         r18::set_locale!("zh");
         assert_eq!(Some("zh-CN"), r18::locale!()); // zh-CN has higher priority than zh-TW
 
+        r18::set_locale!("zh-HK");
+        assert_eq!(Some("zh-CN"), r18::locale!()); // zh-CN has higher priority than zh-TW
+
         assert_eq!(format!("你好，{}", name), r18::tr!("Hello, {}", name));
         assert_eq!(
             format!(

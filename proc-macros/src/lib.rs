@@ -89,20 +89,33 @@ fn generate_one_locale(language: &str, path: impl AsRef<Path>) -> proc_macro2::T
 }
 
 fn generate_helpers(languages: &[LanguageTag<String>]) -> proc_macro2::TokenStream {
-    let lang_match = languages
+    let languages = languages
+        .into_iter()
+        .map(|l| (l, format_ident!("{}", l.to_uppercase().replace('-', "_"))))
+        .collect::<Vec<_>>();
+
+    let exact_match = languages
         .iter()
-        .fold(proc_macro2::TokenStream::new(), |mut stream, lang| {
-            let ident = format_ident!("{}", lang.to_uppercase().replace('-', "_"));
-            let (primary, region) = (lang.primary_language(), lang.region());
-
-            if let Some(region) = region {
+        .filter_map(|(l, ident)| {
+            l.region()
+                .map(|region| (l.primary_language(), region, ident))
+        })
+        .fold(
+            proc_macro2::TokenStream::new(),
+            |mut stream, (primary, region, ident)| {
                 stream.extend(quote! { (#primary, Some(#region)) => Some(& #ident) , }.into_iter());
-            }
+                stream
+            },
+        );
 
-            stream.extend(quote! { (#primary, None) => Some(& #ident) , }.into_iter());
-
+    let fuzzy_match = languages.iter().fold(
+        proc_macro2::TokenStream::new(),
+        |mut stream, (lang, ident)| {
+            let primary = lang.primary_language();
+            stream.extend(quote! { (#primary, _) => Some(& #ident) , }.into_iter());
             stream
-        });
+        },
+    );
 
     quote! {
         #[doc(hidden)]
@@ -112,7 +125,8 @@ fn generate_helpers(languages: &[LanguageTag<String>]) -> proc_macro2::TokenStre
                 .unwrap() = match r18::LanguageTag::parse_and_normalize(locale.as_ref()) {
                 Ok(lang) => {
                     match (lang.primary_language(), lang.region()) {
-                        #lang_match
+                        #exact_match
+                        #fuzzy_match
                         _ => None,
                     }
                 }
