@@ -1,9 +1,10 @@
 use std::path::{Path, PathBuf};
 
 use glob::glob;
+use oxilangtag::LanguageTag;
 use quote::{format_ident, quote};
 
-use oxilangtag::LanguageTag;
+mod extract;
 
 struct PathStr(String);
 
@@ -69,7 +70,7 @@ pub fn init(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 
 fn generate_one_locale(language: &str, path: impl AsRef<Path>) -> proc_macro2::TokenStream {
     let code = format_ident!("{}", language.to_uppercase().replace('-', "_"));
-    let translation = r18_trans_support::import(path)
+    let translation = extract::import(path)
         .into_iter()
         .map(|(k, v)| quote!( #k => #v ));
 

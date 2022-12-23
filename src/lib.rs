@@ -1,4 +1,5 @@
 //! # 🔞
+//!
 //! `r18` is a crate for internationalized Rust projects.
 //!
 //! ## Usage
@@ -57,10 +58,9 @@ pub use once_cell::sync::Lazy;
 pub use oxilangtag::{LanguageTag, LanguageTagParseError};
 #[doc(hidden)]
 pub use phf;
+pub use r18_proc_macros::init;
 #[doc(hidden)]
 pub use sys_locale::get_locale;
-
-pub use r18_proc_macros::init;
 
 mod_use::mod_use!(macros);
 
