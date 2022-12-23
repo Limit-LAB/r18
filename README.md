@@ -4,33 +4,35 @@
 [![docs](https://docs.rs/r18/badge.svg)](https://docs.rs/r18)
 [![build](https://github.com/Limit-IM/r18/actions/workflows/rust.yml/badge.svg)](https://github.com/Limit-IM/r18/actions/workflows/rust.yml)
 
-`r18` is a crate for internationalized Rust projects.
+`r18` is a crate for internationalising Rust projects.
 
 ## Usage
 
-Add `r18` to your project's dependencies.
+Add `r18` as your project dependency.
 
 ```toml
 [dependencies]
 r18 = "0.1"
 ```
 
-Create a `JSON` translation file whose name format is `BCP 47` language tag in a directory and write it as follows:
+Create a `JSON` translation file with name `BCP 47` language tag as naming format, like below:
 
 ```json
-// ./tr/zh-CN.json
+// PATH: ./tr/zh-CN.json
 {
     "Hello, {}": "你好，{}"
 }
 ```
 
-Then add `r18::init!` to the global area of your code with the translation file directory path (is `./tr` in this example) relative to your project root.
+Then add `r18::init!` to the global scope of your code with the directory where translation files in (in following example is `./tr`).
 
 ```rust
 r18::init!("tr");
 ```
 
-After initialization, use `auto_detect!` to detect locale and load translation model (optional, you can use `set_locale!` to set locale manually), then use `tr!` to translate your text which has been translated.
+After initialising the `r18`, use `auto_detect!` to detect locale and load translation model automatically.  
+If you want,you can use `set_locale!` to set locale manually.  
+After above process, use `tr!` to get your text which has been translated.
 
 ```rust
 r18::init!("tr");
@@ -47,12 +49,12 @@ fn main() {
 }
 ```
 
-For a complete example, you can see [here](./example/). you can run the example with:
+You can find a complete example [here](./example/). You can run the example with following command:
 
 ```shell
 cargo run -p example
 ```
 
-## Alternative
+## Credit
 
 * [rust-i18n](https://github.com/longbridgeapp/rust-i18n)
