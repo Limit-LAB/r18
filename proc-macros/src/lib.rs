@@ -50,7 +50,7 @@ pub fn init(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                 .file_stem()
                 .and_then(|p| p.to_str())
                 .and_then(|p| p.split('.').last())
-                .expect("Cannot found language code")
+                .expect("Cannot find language code")
                 .to_string();
 
             token.extend(generate_language(&language, p).into_iter());
