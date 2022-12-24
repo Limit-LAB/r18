@@ -31,7 +31,7 @@ r18::init!("tr");
 ```
 
 After initialising the `r18`, use `auto_detect!` to detect locale and load translation model automatically.  
-If you want,you can use `set_locale!` to set locale manually.  
+If you want, you can use `set_locale!` to set locale manually.  
 After above process, use `tr!` to get your text which has been translated.
 
 ```rust
