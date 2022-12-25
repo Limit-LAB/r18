@@ -1,17 +1,17 @@
 //! # 🔞
 //!
-//! `r18` is a crate for internationalized Rust projects.
+//! `r18` is a crate for internationalising Rust projects.
 //!
 //! ## Usage
 //!
-//! Add `r18` to your project's dependencies.
+//! Add `r18` as your project dependency.
 //!
 //! ```toml
 //! [dependencies]
 //! r18 = "0.1"
 //! ```
-//! Create a `JSON` translation file whose name format is `BCP 47` language tag
-//! in a directory and write it as follows:
+//! Create a `JSON` translation file with name `BCP 47`
+//! language tag as naming format, like below:
 //!
 //! ```json
 //! // ./tr/zh-CN.json
@@ -20,18 +20,17 @@
 //! }
 //! ```
 //!
-//! Then add [`init!`] to the global area of your code with the translation
-//! file directory path (is `./tr` in this example) relative to your project
-//! root.
+//! Then add [`init`] to the global scope of your code with
+//! the directory where translation files in (in following example is `./tr`).
 //!
 //! ```ignore
 //! r18::init!("tr");
 //! ```
 //!
-//! After initialization, use [`auto_detect!`] to detect locale and
-//! load translation model (optional, you can use [`set_locale!`] to set locale
-//! manually),  then use [`tr!`] to translate your text which has been
-//! translated.
+//! After initialising the `r18`, use [`auto_detect`] to detect locale and load
+//! translation model automatically.  
+//! If you want, you can use [`set_locale`] to set locale manually.  
+//! After above process, use [`tr`] to get your text which has been translated.
 //!
 //! ```ignore
 //! r18::init!("tr");

@@ -2,7 +2,7 @@ use std::{collections::HashMap, fs::File, io::Read, path::Path};
 
 use serde_json::Value;
 
-pub fn import(path: impl AsRef<Path>) -> HashMap<String, String> {
+pub fn extract(path: impl AsRef<Path>) -> HashMap<String, String> {
     let mut content = String::new();
 
     File::open(path.as_ref())
