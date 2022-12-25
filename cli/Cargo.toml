@@ -7,4 +7,6 @@ edition = "2021"
 
 [dependencies]
 mod_use = "0.2.1"
+walkdir = "2.3"
+r18-trans-support = { path = "../trans-support", version = "0.2" }
 clap = { version = "4.0", features = ["derive", "cargo"] }
