@@ -3,6 +3,7 @@ use std::{
     path::Path,
 };
 
+use oxilangtag::LanguageTag;
 use walkdir::WalkDir;
 
 mod_use::mod_use!(args);
@@ -78,7 +79,14 @@ fn update(root: impl AsRef<Path>) -> Result<()> {
                         .unwrap_or_default()
                         .to_str()
                         .unwrap_or_default()
-                        .starts_with("TODO"))
+                        .starts_with("TODO")
+                    && LanguageTag::parse(
+                        path.file_stem()
+                            .unwrap_or_default()
+                            .to_str()
+                            .unwrap_or_default(),
+                    )
+                    .is_ok())
                 .then_some(entry)
             })
         })
@@ -132,6 +140,9 @@ fn generate(locales: Vec<String>, root: impl AsRef<Path>) -> Result<()> {
     }
 
     for locale in locales {
+        let locale = LanguageTag::parse_and_normalize(&locale)
+            .map_err(|e| format!("Invalid locale: {}: {}", locale, e))?;
+
         let expected_name = format!("{}.json", locale);
         let expected_path = root.as_ref().join(&locale_path).join(&expected_name);
 

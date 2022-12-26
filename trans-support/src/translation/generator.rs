@@ -6,12 +6,7 @@ pub fn generate(
     old_path: impl AsRef<Path>,
     translation: HashMap<String, String>,
 ) -> crate::Result<()> {
-    let mut document = Map::new().into();
-
-    for (key, value) in translation {
-        let level = key.split('.').filter(|l| !l.is_empty());
-        generate_value(level, &mut document, value);
-    }
+    let document = generate_inner(translation);
 
     let todo_path = old_path.as_ref().with_file_name(format!(
         "TODO.{}",
@@ -36,6 +31,17 @@ pub fn generate(
     Ok(())
 }
 
+fn generate_inner(translation: HashMap<String, String>) -> Value {
+    let mut document = Map::new().into();
+
+    for (key, value) in translation {
+        let level = key.split('.').filter(|l| !l.is_empty());
+        generate_value(level, &mut document, value);
+    }
+
+    document
+}
+
 fn generate_value<'a>(mut level: impl Iterator<Item = &'a str>, parent: &mut Value, value: String) {
     match level.next() {
         Some(current) => generate_value(level, &mut parent[current], value),
@@ -46,8 +52,6 @@ fn generate_value<'a>(mut level: impl Iterator<Item = &'a str>, parent: &mut Val
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
-
-    use serde_json::Map;
 
     #[test]
     fn test_generate() {
@@ -70,13 +74,6 @@ mod tests {
         .map(|(k, v)| (k.to_string(), v.to_string()))
         .collect::<HashMap<String, String>>();
 
-        let mut document = Map::new().into();
-
-        for (key, value) in translation {
-            let level = key.split('.').filter(|l| !l.is_empty()).into_iter();
-            super::generate_value(level, &mut document, value);
-        }
-
-        assert_eq!(json, document);
+        assert_eq!(json, super::generate_inner(translation));
     }
 }
