@@ -45,7 +45,13 @@ pub fn init(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
             let language = path
                 .file_stem()
                 .and_then(|p| p.to_str())
-                .and_then(|p| p.split('.').last())
+                .and_then(|p| {
+                    if p.starts_with("TODO") {
+                        return None;
+                    }
+                    
+                    p.split('.').last()
+                })
                 .and_then(|p| LanguageTag::parse_and_normalize(p).ok())?;
 
             let ret = generate_one_locale(&language, path);
@@ -88,7 +94,7 @@ fn generate_one_locale(language: &str, path: impl AsRef<Path>) -> proc_macro2::T
 
 fn generate_helpers(languages: &[LanguageTag<String>]) -> proc_macro2::TokenStream {
     let languages = languages
-        .into_iter()
+        .iter()
         .map(|l| (l, format_ident!("{}", l.to_uppercase().replace('-', "_"))))
         .collect::<Vec<_>>();
 

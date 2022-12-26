@@ -11,7 +11,7 @@ readme = "README.md"
 authors = [
     "ho229v3666@gmail.com",
 ]
-exclude = [".github", "example", "proc-macros", "trans-support"]
+exclude = [".github", "cli", "example", "proc-macros", "trans-support"]
 
 [dependencies]
 mod_use = "0.2"
@@ -25,6 +25,7 @@ r18-proc-macros = { path = "./proc-macros", version = "0.2" }
 
 [workspace]
 members = [
+    "cli",
     "example",
     "proc-macros",
     "trans-support"
