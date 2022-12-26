@@ -45,7 +45,13 @@ pub fn init(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
             let language = path
                 .file_stem()
                 .and_then(|p| p.to_str())
-                .and_then(|p| p.split('.').last())
+                .and_then(|p| {
+                    if p.starts_with("TODO") {
+                        return None;
+                    }
+                    
+                    p.split('.').last()
+                })
                 .and_then(|p| LanguageTag::parse_and_normalize(p).ok())?;
 
             let ret = generate_one_locale(&language, path);

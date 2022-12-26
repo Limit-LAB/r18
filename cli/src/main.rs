@@ -1,4 +1,7 @@
-use std::{collections::HashSet, path::Path};
+use std::{
+    collections::{HashMap, HashSet},
+    path::Path,
+};
 
 use walkdir::WalkDir;
 
@@ -47,33 +50,59 @@ fn update(root: impl AsRef<Path>) -> Result<()> {
         return Err("Missing translation directory".into());
     }
 
+    if contents.is_empty() {
+        println!("There is currently no untranslated text");
+        return Ok(());
+    }
+
     for entry in WalkDir::new(root.as_ref().join(locale))
         .into_iter()
         .filter_map(|entry| {
             entry.ok().and_then(|entry| {
-                entry
-                    .path()
-                    .extension()
-                    .map(|ext| ext == "rs")
-                    .unwrap_or(false)
-                    .then_some(entry)
+                let path = entry.path();
+                (path.extension() == Some("json".as_ref())
+                    && !path
+                        .file_name()
+                        .unwrap_or_default()
+                        .to_str()
+                        .unwrap_or_default()
+                        .starts_with("TODO"))
+                .then_some(entry)
             })
         })
     {
+        let file_name = entry
+            .path()
+            .file_name()
+            .unwrap_or_default()
+            .to_str()
+            .unwrap_or_default();
+
+        println!("\nChecking {file_name} for untranslated texts...");
+
         let mut is_modified = false;
-        let mut translation = r18_trans_support::translation::extract(entry.path());
+        let mut todo = HashMap::new();
+        let translation = r18_trans_support::translation::extract(entry.path());
 
         for content in contents.iter() {
             if !translation.contains_key(content) {
                 is_modified = true;
-                translation.insert(content.into(), "[TODO]".into());
+                todo.insert(content.to_string(), "[TODO]".to_string());
             }
         }
 
         if is_modified {
+            println!("{} untranslated text(s) were found", todo.len());
+            println!("Writing to TODO.{}", file_name);
 
+            todo.extend(translation.into_iter());
+            r18_trans_support::translation::generate(entry.path(), todo)?;
+        } else {
+            println!("No untranslated text found");
         }
     }
+
+    println!("\nDone");
 
     Ok(())
 }

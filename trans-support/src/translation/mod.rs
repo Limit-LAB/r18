@@ -1,1 +1,1 @@
-mod_use::mod_use!(extractor);
+mod_use::mod_use!(extractor, generator);
