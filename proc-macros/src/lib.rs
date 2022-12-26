@@ -94,7 +94,7 @@ fn generate_one_locale(language: &str, path: impl AsRef<Path>) -> proc_macro2::T
 
 fn generate_helpers(languages: &[LanguageTag<String>]) -> proc_macro2::TokenStream {
     let languages = languages
-        .into_iter()
+        .iter()
         .map(|l| (l, format_ident!("{}", l.to_uppercase().replace('-', "_"))))
         .collect::<Vec<_>>();
 

@@ -9,7 +9,7 @@ pub fn generate(
     let mut document = Map::new().into();
 
     for (key, value) in translation {
-        let level = key.split('.').filter(|l| !l.is_empty()).into_iter();
+        let level = key.split('.').filter(|l| !l.is_empty());
         generate_value(level, &mut document, value);
     }
 
@@ -24,7 +24,7 @@ pub fn generate(
     ));
 
     let mut todo_file =
-        File::create(&todo_path).map_err(|e| format!("Failed to create todo file: {}", e))?;
+        File::create(todo_path).map_err(|e| format!("Failed to create todo file: {}", e))?;
 
     writeln!(
         todo_file,

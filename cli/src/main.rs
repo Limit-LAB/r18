@@ -20,15 +20,21 @@ fn main() {
                 Err("Invalid project root".into())
             }
         }
-        Command::Generate { locale } => todo!(),
+        Command::Generate { locales } => {
+            if locales.is_empty() {
+                Err("No locale specified to generate".into())
+            } else {
+                generate(locales, &args.root)
+            }
+        }
     } {
         eprintln!("Error: {}", e);
     }
 }
 
-fn update(root: impl AsRef<Path>) -> Result<()> {
+fn extract_source(root: impl AsRef<Path>) -> Result<(HashSet<String>, String)> {
     let mut contents = HashSet::new();
-    let mut locale = String::new();
+    let mut locale_path = String::new();
 
     for entry in WalkDir::new(root.as_ref().join("src"))
         .into_iter()
@@ -43,10 +49,16 @@ fn update(root: impl AsRef<Path>) -> Result<()> {
             })
         })
     {
-        r18_trans_support::source::extract(entry.path(), &mut contents, &mut locale)?;
+        r18_trans_support::source::extract(entry.path(), &mut contents, &mut locale_path)?;
     }
 
-    if locale.is_empty() {
+    Ok((contents, locale_path))
+}
+
+fn update(root: impl AsRef<Path>) -> Result<()> {
+    let (contents, locale_path) = extract_source(root.as_ref())?;
+
+    if locale_path.is_empty() {
         return Err("Missing translation directory".into());
     }
 
@@ -55,7 +67,7 @@ fn update(root: impl AsRef<Path>) -> Result<()> {
         return Ok(());
     }
 
-    for entry in WalkDir::new(root.as_ref().join(locale))
+    for entry in WalkDir::new(root.as_ref().join(locale_path))
         .into_iter()
         .filter_map(|entry| {
             entry.ok().and_then(|entry| {
@@ -100,6 +112,44 @@ fn update(root: impl AsRef<Path>) -> Result<()> {
         } else {
             println!("No untranslated text found");
         }
+    }
+
+    println!("\nDone");
+
+    Ok(())
+}
+
+fn generate(locales: Vec<String>, root: impl AsRef<Path>) -> Result<()> {
+    let (contents, locale_path) = extract_source(root.as_ref())?;
+
+    if locale_path.is_empty() {
+        return Err("Missing translation directory".into());
+    }
+
+    if contents.is_empty() {
+        println!("There is currently no untranslated text");
+        return Ok(());
+    }
+
+    for locale in locales {
+        let expected_name = format!("{}.json", locale);
+        let expected_path = root.as_ref().join(&locale_path).join(&expected_name);
+
+        if expected_path.exists() {
+            println!(
+                "{} already exists, please use update subcommand instead",
+                expected_name
+            );
+            continue;
+        }
+
+        // TODO: automatic translation
+        let todo = contents
+            .iter()
+            .map(|content| (content.clone(), "[TODO]".to_string()))
+            .collect::<HashMap<_, _>>();
+
+        r18_trans_support::translation::generate(expected_path, todo)?;
     }
 
     println!("\nDone");

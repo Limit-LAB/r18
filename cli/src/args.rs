@@ -28,7 +28,7 @@ pub(crate) enum Command {
     Update,
     /// Generate translation files named with language tag
     Generate {
-        locale: Vec<String>,
+        locales: Vec<String>,
     }
 }
 
