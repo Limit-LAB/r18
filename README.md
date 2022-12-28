@@ -12,10 +12,11 @@ Add `r18` as your project dependency.
 
 ```toml
 [dependencies]
-r18 = "0.1"
+r18 = "*"
 ```
 
-Create a `JSON` translation file with name `BCP 47` language tag as naming format, like below:
+Create a `JSON` translation file with name `BCP 47` language tag as naming format, like below:  
+(you can generate it by [CLI Tool](#cli-tool-usage) also)
 
 ```json
 // PATH: ./tr/zh-CN.json
@@ -54,6 +55,28 @@ You can find a complete example [here](./example/). You can run the example with
 ```shell
 cargo run -p example
 ```
+
+## CLI Tool Usage
+
+Run the below command to install `cargo r18`:
+
+```shell
+cargo install cargo-r18
+```
+
+After creating the translation directory and writing code like before, you can run the following command to generate translation files (eg. TODO.zh-CN.json):
+
+```shell
+cargo r18 generate zh-CN
+```
+
+Additionally, you can generate todo files of untranslated texts after changing your source by:
+
+```shell
+cargo r18 update
+```
+
+Run `cargo r18 -h` for more options.
 
 ## Credit
 
