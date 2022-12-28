@@ -72,22 +72,12 @@ fn update(root: impl AsRef<Path>) -> Result<()> {
         .into_iter()
         .filter_map(|entry| {
             entry.ok().and_then(|entry| {
-                let path = entry.path();
-                (path.extension() == Some("json".as_ref())
-                    && !path
-                        .file_name()
-                        .unwrap_or_default()
-                        .to_str()
-                        .unwrap_or_default()
-                        .starts_with("TODO")
-                    && LanguageTag::parse(
-                        path.file_stem()
-                            .unwrap_or_default()
-                            .to_str()
-                            .unwrap_or_default(),
-                    )
-                    .is_ok())
-                .then_some(entry)
+                let mut parts = entry.path().file_name()?.to_str()?.split('.').rev();
+
+                (parts.next() == Some("json")
+                    && LanguageTag::parse(parts.next()?).is_ok()
+                    && parts.next() == None)
+                    .then_some(entry)
             })
         })
     {

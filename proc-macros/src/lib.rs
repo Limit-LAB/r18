@@ -1,8 +1,8 @@
 use std::path::{Path, PathBuf};
 
-use glob::glob;
 use oxilangtag::LanguageTag;
 use quote::{format_ident, quote};
+use walkdir::WalkDir;
 
 struct PathStr(String);
 
@@ -37,24 +37,18 @@ pub fn init(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     };
 
     let mut languages = vec![];
-    let locales = glob(&format!("{}/**/*.json", path.display()))
-        .expect("Failed to read glob pattern")
+    let locales = WalkDir::new(path)
+        .into_iter()
         .filter_map(|p| {
             let path = p.ok()?;
+            let mut parts = path.path().file_name()?.to_str()?.split('.').rev();
 
-            let language = path
-                .file_stem()
-                .and_then(|p| p.to_str())
-                .and_then(|p| {
-                    if p.starts_with("TODO") {
-                        return None;
-                    }
-                    
-                    p.split('.').last()
-                })
-                .and_then(|p| LanguageTag::parse_and_normalize(p).ok())?;
+            let language = match (parts.next(), parts.next(), parts.next()) {
+                (Some("json"), Some(tag), None) => LanguageTag::parse_and_normalize(tag).ok(),
+                _ => None,
+            }?;
 
-            let ret = generate_one_locale(&language, path);
+            let ret = generate_one_locale(&language, path.path());
             languages.push(language);
             Some(ret)
         })
