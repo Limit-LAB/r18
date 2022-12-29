@@ -4,19 +4,19 @@
 [![docs](https://docs.rs/r18/badge.svg)](https://docs.rs/r18)
 [![build](https://github.com/Limit-IM/r18/actions/workflows/rust.yml/badge.svg)](https://github.com/Limit-IM/r18/actions/workflows/rust.yml)
 
-`r18` is a crate for internationalising Rust projects.
+`r18` is a crate intends to simplify the internationalisation of Rust projects.
 
 ## Usage
 
-Add `r18` as your project dependency.
+Add `r18` as your project dependency:
 
 ```toml
 [dependencies]
 r18 = "*"
 ```
 
-Create a `JSON` translation file with name `BCP 47` language tag as naming format, like below:  
-(you can generate it by [CLI Tool](#cli-tool-usage) also)
+Create a `JSON` translation file whose filename follows [IETF BCP 47](https://www.wikiwand.com/en/IETF_language_tag) language tag, like below
+(you can generate it by [CLI Tool](#cli-tool-usage)):
 
 ```json
 // PATH: ./tr/zh-CN.json
@@ -39,7 +39,7 @@ After above process, use `tr!` to get your text which has been translated.
 r18::init!("tr");
 
 fn main() {
-    r18::auto_detect!();
+    r18::auto_detect!(); // get locale & load lang mod
 
     let name = "ho-229";
     println!("{}", tr!("Hello, {}", name));
@@ -64,7 +64,8 @@ Run the below command to install `cargo r18`:
 cargo install cargo-r18
 ```
 
-After creating the translation directory and writing code like before, you can run the following command to generate translation files (eg. TODO.zh-CN.json):
+After creating the translation directory and writing code as above, you can run the following command to
+generate translation files (eg. TODO.zh-CN.json):
 
 ```shell
 cargo r18 generate zh-CN
@@ -76,7 +77,8 @@ Additionally, you can generate todo files of untranslated texts after changing y
 cargo r18 update
 ```
 
-***LIMITATION:*** `cargo r18` is only scanning macros named `init` and `tr` that it can NOT recognize which belong to `r18` or not, you should make sure that no similar macros are named in your source before using `cargo r18`.
+***LIMITATION:*** `cargo r18` is only scanning macros named `init` and `tr` that it can NOT recognise which belong to `r18` or not,
+you should make sure that no similar macros are named in your source before using `cargo r18`.
 
 Run `cargo r18 -h` for more options.
 
