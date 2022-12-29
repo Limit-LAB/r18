@@ -76,6 +76,8 @@ Additionally, you can generate todo files of untranslated texts after changing y
 cargo r18 update
 ```
 
+***LIMITATION:*** `cargo r18` is only scanning macros named `init` and `tr` that it can NOT recognize which belong to `r18` or not, you should make sure that no similar macros are named in your source before using `cargo r18`.
+
 Run `cargo r18 -h` for more options.
 
 ## Credit

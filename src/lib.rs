@@ -8,13 +8,13 @@
 //!
 //! ```toml
 //! [dependencies]
-//! r18 = "0.1"
+//! r18 = "*"
 //! ```
 //! Create a `JSON` translation file with name `BCP 47`
 //! language tag as naming format, like below:
 //!
 //! ```json
-//! // ./tr/zh-CN.json
+//! // PATH: ./tr/zh-CN.json
 //! {
 //!     "Hello, {}": "你好，{}"
 //! }
