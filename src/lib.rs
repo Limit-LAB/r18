@@ -86,7 +86,7 @@ pub fn translate(prefix: impl AsRef<str>, content: &str) -> &str {
 
     match locale
         .translate
-        .get(format!("{}.{}", prefix.as_ref(), content).as_str())
+        .get(format!("{} {}", prefix.as_ref(), content).as_str())
     {
         Some(tr) => tr,
         None => content,

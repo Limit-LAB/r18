@@ -134,7 +134,7 @@ fn extract_tr(stream: TokenStream2, contents: &mut HashSet<String>) -> crate::Re
         _ => return Err(" Unexpected termination while parsing content".into()),
     };
 
-    contents.insert(format!("{}.{}", prefix, content));
+    contents.insert(format!("{} {}", prefix, content));
 
     Ok(())
 }

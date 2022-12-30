@@ -6,7 +6,7 @@ pub fn generate(
     old_path: impl AsRef<Path>,
     translation: HashMap<String, String>,
 ) -> crate::Result<()> {
-    let document = generate_inner(translation);
+    let document = generate_inner(translation)?;
 
     let todo_path = old_path.as_ref().with_file_name(format!(
         "TODO.{}",
@@ -31,15 +31,23 @@ pub fn generate(
     Ok(())
 }
 
-fn generate_inner(translation: HashMap<String, String>) -> Value {
+fn generate_inner(translation: HashMap<String, String>) -> crate::Result<Value> {
     let mut document = Map::new().into();
 
     for (key, value) in translation {
-        let level = key.split('.').filter(|l| !l.is_empty());
-        generate_value(level, &mut document, value);
+        let (prefix, content) = key
+            .split_once(' ')
+            .ok_or("Can not find whitespace in key")?;
+        let mut level = prefix
+            .split('.')
+            .filter(|l| !l.is_empty())
+            .collect::<Vec<_>>();
+
+        level.push(content);
+        generate_value(level.into_iter(), &mut document, value);
     }
 
-    document
+    Ok(document)
 }
 
 fn generate_value<'a>(mut level: impl Iterator<Item = &'a str>, parent: &mut Value, value: String) {
@@ -59,21 +67,23 @@ mod tests {
             "Hello, {}": "你好，{}",
             "Debug: {:?}": "调试：{:?}",
             "{} is typing": "{} 正在输入",
+            "First sentence. Second sentence.": "第一句话。第二句话。",
             "evil": {
                 "{} is typing": "{} 正在女装"
             }
         });
 
         let translation = [
-            (".Hello, {}", "你好，{}"),
-            (".Debug: {:?}", "调试：{:?}"),
-            (".{} is typing", "{} 正在输入"),
-            (".evil.{} is typing", "{} 正在女装"),
+            (" Hello, {}", "你好，{}"),
+            (" Debug: {:?}", "调试：{:?}"),
+            (" {} is typing", "{} 正在输入"),
+            (" First sentence. Second sentence.", "第一句话。第二句话。"),
+            (".evil {} is typing", "{} 正在女装"),
         ]
         .into_iter()
         .map(|(k, v)| (k.to_string(), v.to_string()))
         .collect::<HashMap<String, String>>();
 
-        assert_eq!(json, super::generate_inner(translation));
+        assert_eq!(json, super::generate_inner(translation).unwrap());
     }
 }
