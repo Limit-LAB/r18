@@ -39,7 +39,7 @@ After above process, use `tr!` to get your text which has been translated.
 r18::init!("tr");
 
 fn main() {
-    r18::auto_detect!(); // get locale & load lang mod
+    r18::auto_detect!(); // get locale & set
 
     let name = "ho-229";
     println!("{}", tr!("Hello, {}", name));

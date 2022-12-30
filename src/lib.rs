@@ -1,17 +1,18 @@
 //! # 🔞
 //!
-//! `r18` is a crate for internationalising Rust projects.
+//! `r18` is a crate intends to simplify the internationalisation of Rust projects.
 //!
 //! ## Usage
 //!
-//! Add `r18` as your project dependency.
+//! Add `r18` as your project dependency:
 //!
 //! ```toml
 //! [dependencies]
 //! r18 = "*"
 //! ```
-//! Create a `JSON` translation file with name `BCP 47`
-//! language tag as naming format, like below:
+//! Create a `JSON` translation file whose filename follows
+//!  [IETF BCP 47](https://www.wikiwand.com/en/IETF_language_tag) 
+//! language tag, like below:
 //!
 //! ```json
 //! // PATH: ./tr/zh-CN.json
@@ -36,7 +37,7 @@
 //! r18::init!("tr");
 //!
 //! fn main() {
-//!     r18::auto_detect!();
+//!     r18::auto_detect!(); // get locale & set
 //!
 //!     let name = "ho-229";
 //!     println!("{}", r18::tr!("Hello, {}", name));
