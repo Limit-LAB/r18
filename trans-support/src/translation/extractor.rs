@@ -21,7 +21,7 @@ fn extract_value(prefix: String, object: Value) -> HashMap<String, String> {
 
     macro_rules! gen_prefix {
         ($prefix:expr, $current:expr, $value:expr) => {
-            match $value.is_object() {
+            match $value.is_object() || $value.is_array() {
                 true => format!("{}.{}", $prefix, $current),
                 false => format!("{} {}", $prefix, $current),
             }

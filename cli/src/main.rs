@@ -76,7 +76,7 @@ fn update(root: impl AsRef<Path>) -> Result<()> {
 
                 (parts.next() == Some("json")
                     && LanguageTag::parse(parts.next()?).is_ok()
-                    && parts.next() == None)
+                    && parts.next().is_none())
                     .then_some(entry)
             })
         })

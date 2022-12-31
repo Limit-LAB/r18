@@ -1,3 +1,4 @@
+#![cfg_attr(feature = "nightly-features", feature(track_path))]
 use std::path::{Path, PathBuf};
 
 use oxilangtag::LanguageTag;
@@ -47,6 +48,9 @@ pub fn init(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                 (Some("json"), Some(tag), None) => LanguageTag::parse_and_normalize(tag).ok(),
                 _ => None,
             }?;
+
+            #[cfg(feature = "nightly-features")]
+            proc_macro::tracked_path::path(path.path().to_str().unwrap_or_default());
 
             let ret = generate_one_locale(&language, path.path());
             languages.push(language);

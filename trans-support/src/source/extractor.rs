@@ -95,9 +95,9 @@ fn extract_tr(stream: TokenStream2, contents: &mut HashSet<String>) -> crate::Re
                     })?
                     .value();
 
-                if !ret.starts_with('.') {
+                if !ret.starts_with('.') || ret.contains(' ') {
                     return Err(format!(
-                        "{}:{} Invalid prefix syntax: prefix must start with '.'",
+                        "{}:{} Invalid prefix syntax: prefix must start with '.' and not contain spaces",
                         pos.line, pos.column
                     )
                     .into());

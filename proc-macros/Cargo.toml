@@ -9,6 +9,7 @@ readme = "../README.md"
 authors = [
     "ho229v3666@gmail.com",
 ]
+build = "build.rs"
 
 [dependencies]
 r18-trans-support = { path = "../trans-support", version = "0.3.0" }
