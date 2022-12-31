@@ -1,6 +1,6 @@
 [package]
 name = "r18"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2021"
 description = "A simply I18n crate for Rust."
 license = "MIT"
@@ -21,7 +21,7 @@ oxilangtag = "0.1"
 phf = { version = "0.11.1", features = ["macros"] }
 dynfmt = { version = "0.1.5", default-features = false, features = ["curly"] }
 
-r18-proc-macros = { path = "./proc-macros", version = "0.3.0" }
+r18-proc-macros = { path = "./proc-macros", version = "0.3.1" }
 
 [workspace]
 members = [
