@@ -73,6 +73,7 @@ pub fn init(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 fn generate_one_locale(language: &str, path: impl AsRef<Path>) -> proc_macro2::TokenStream {
     let code = format_ident!("{}", language.to_uppercase().replace('-', "_"));
     let translation = r18_trans_support::translation::extract(path)
+        .unwrap()
         .into_iter()
         .map(|(k, v)| quote!( #k => #v ));
 

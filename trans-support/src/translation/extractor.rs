@@ -2,18 +2,14 @@ use std::{collections::HashMap, fs::File, io::Read, path::Path};
 
 use serde_json::Value;
 
-pub fn extract(path: impl AsRef<Path>) -> HashMap<String, String> {
+pub fn extract(path: impl AsRef<Path>) -> crate::Result<HashMap<String, String>> {
     let mut content = String::new();
 
-    File::open(path.as_ref())
-        .expect("Failed to open translation file")
-        .read_to_string(&mut content)
-        .expect("Failed to read translation file");
+    File::open(path.as_ref())?.read_to_string(&mut content)?;
 
-    let root = serde_json::from_str::<Value>(&content)
-        .unwrap_or_else(|_| panic!("Failed to parse file: {}", path.as_ref().display()));
+    let root = serde_json::from_str::<Value>(&content)?;
 
-    extract_value(String::new(), root)
+    Ok(extract_value(String::new(), root))
 }
 
 fn extract_value(prefix: String, object: Value) -> HashMap<String, String> {

@@ -92,7 +92,7 @@ fn update(root: impl AsRef<Path>) -> Result<()> {
 
         let mut is_modified = false;
         let mut todo = HashMap::new();
-        let translation = r18_trans_support::translation::extract(entry.path());
+        let translation = r18_trans_support::translation::extract(entry.path())?;
 
         for content in contents.iter() {
             if !translation.contains_key(content) {
