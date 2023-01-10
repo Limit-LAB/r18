@@ -25,7 +25,11 @@ enum SelfCommand {
 #[derive(Subcommand)]
 pub(crate) enum Command {
     /// Update existing translation files
-    Update,
+    Update {
+        /// Remove unused translations
+        #[arg(short, long, default_value_t = false)]
+        rm_unused: bool,
+    },
     /// Generate translation files named with language tag
     Generate {
         locales: Vec<String>,

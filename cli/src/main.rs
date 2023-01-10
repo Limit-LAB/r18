@@ -14,9 +14,9 @@ fn main() {
     let args = args::Args::parse().inner_args();
 
     if let Err(e) = match args.command {
-        Command::Update => {
+        Command::Update { rm_unused } => {
             if Path::new(&args.root).is_dir() {
-                update(&args.root)
+                update(&args.root, rm_unused)
             } else {
                 Err("Invalid project root".into())
             }
@@ -56,7 +56,7 @@ fn extract_source(root: impl AsRef<Path>) -> Result<(HashSet<String>, String)> {
     Ok((contents, locale_path))
 }
 
-fn update(root: impl AsRef<Path>) -> Result<()> {
+fn update(root: impl AsRef<Path>, rm_unused: bool) -> Result<()> {
     let (contents, locale_path) = extract_source(root.as_ref())?;
 
     if locale_path.is_empty() {
@@ -77,7 +77,7 @@ fn update(root: impl AsRef<Path>) -> Result<()> {
                 (parts.next() == Some("json")
                     && LanguageTag::parse(parts.next()?).is_ok()
                     && parts.next().is_none())
-                    .then_some(entry)
+                .then_some(entry)
             })
         })
     {
@@ -90,25 +90,43 @@ fn update(root: impl AsRef<Path>) -> Result<()> {
 
         println!("\nChecking {file_name} for untranslated texts...");
 
-        let mut is_modified = false;
         let mut todo = HashMap::new();
-        let translation = r18_trans_support::translation::extract(entry.path())?;
+        let mut unused = Vec::new();
+        let mut translations = r18_trans_support::translation::extract(entry.path())?;
 
         for content in contents.iter() {
-            if !translation.contains_key(content) {
-                is_modified = true;
+            if !translations.contains_key(content) {
                 todo.insert(content.to_string(), "[TODO]".to_string());
             }
         }
 
-        if is_modified {
+        for (key, _) in translations.iter() {
+            if !contents.contains(key) {
+                unused.push(key.clone());
+            }
+        }
+
+        if rm_unused {
+            for u in unused.iter() {
+                translations.remove(u);
+            }
+
+            println!("{} unused translation(s) were removed", unused.len());
+        } else {
+            println!("{} unused translation(s) were found", unused.len());
+        }
+
+        if todo.is_empty() {
+            println!("No untranslated text found");
+        } else {
             println!("{} untranslated text(s) were found", todo.len());
             println!("Writing to TODO.{}", file_name);
 
-            todo.extend(translation.into_iter());
-            r18_trans_support::translation::generate(entry.path(), todo)?;
-        } else {
-            println!("No untranslated text found");
+            translations.extend(todo.clone().into_iter());
+        }
+
+        if !todo.is_empty() || (rm_unused && !unused.is_empty()) {
+            r18_trans_support::translation::generate(entry.path(), translations)?;
         }
     }
 
