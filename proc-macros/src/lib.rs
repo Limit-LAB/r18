@@ -31,7 +31,14 @@ struct LocaleExtra {
     translations: HashMap<String, String>,
 }
 
-type TranslationModel = HashMap<String, BTreeMap<String, LocaleExtra>>;
+type LocaleModel = BTreeMap<
+    String, // region
+    LocaleExtra,
+>;
+type TranslationModel = HashMap<
+    String, // primary language
+    LocaleModel,
+>;
 
 /// Generate translation models and functions `set_locale` and `locale` to setup
 /// `r18` environment with given translation directory.
@@ -129,7 +136,7 @@ fn load_config(path: impl AsRef<Path>) -> Config {
         .unwrap_or_default()
 }
 
-fn generate_primary(locales: &BTreeMap<String, LocaleExtra>) -> proc_macro2::TokenStream {
+fn generate_primary(locales: &LocaleModel) -> proc_macro2::TokenStream {
     locales
         .iter()
         .map(|(_, extra)| {
@@ -160,10 +167,10 @@ fn generate_locales(model: &TranslationModel) -> proc_macro2::TokenStream {
         .collect()
 }
 
-fn generate_primary_matches(
+fn generate_lang_matches(
     config: &Config,
     primary: &String,
-    locales: &BTreeMap<String, LocaleExtra>,
+    locales: &LocaleModel,
 ) -> proc_macro2::TokenStream {
     let exact_matches =
         locales
@@ -206,7 +213,7 @@ fn generate_primary_matches(
 fn generate_helpers(config: &Config, model: &TranslationModel) -> proc_macro2::TokenStream {
     let matches = model
         .iter()
-        .map(|(primary, locales)| generate_primary_matches(config, primary, locales))
+        .map(|(primary, locales)| generate_lang_matches(config, primary, locales))
         .collect::<proc_macro2::TokenStream>();
 
     quote! {
