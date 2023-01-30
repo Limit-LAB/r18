@@ -106,7 +106,7 @@ fn scan_locales(path: impl AsRef<Path>) -> (Config, TranslationModel) {
             let region = language.region().unwrap_or_default().to_string();
             let name = region
                 .is_empty()
-                .then_some(String::new())
+                .then_some(language.primary_language().into())
                 .unwrap_or_else(|| format!("{}-{}", language.primary_language(), region));
 
             let extra = LocaleExtra {
@@ -115,15 +115,10 @@ fn scan_locales(path: impl AsRef<Path>) -> (Config, TranslationModel) {
                 translations: r18_trans_support::translation::extract(path.path()).unwrap(),
             };
 
-            if let Some(locales) = model.get_mut(language.primary_language()) {
-                locales.insert(region, extra);
-            } else {
-                model.insert(language.primary_language().into(), {
-                    let mut locales = BTreeMap::new();
-                    locales.insert(region, extra);
-                    locales
-                });
-            }
+            model
+                .entry(language.primary_language().into())
+                .or_default()
+                .insert(region, extra);
         });
 
     (config, model)
