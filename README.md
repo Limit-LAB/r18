@@ -50,6 +50,24 @@ fn main() {
 }
 ```
 
+### Fallback Configuration
+
+Sometimes your translation may not fully match the user's locale, but usually, this doesn't mean that your translations cannot be used. In that case, we need the fallback feature.
+
+By default, if the translation does not match the user's locale, `r18` will fallback to the translation which is the same language by the highest alphabetical order.
+
+You can also specify a fallback translation for a language in `config.json` which placed with other translation files.
+
+eg.
+
+```json
+{
+    "fallback": {
+        "zh": "zh-TW"
+    }
+}
+```
+
 You can find a complete example [here](./example/). You can run the example with following command:
 
 ```shell
