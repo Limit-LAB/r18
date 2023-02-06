@@ -50,13 +50,13 @@ fn main() {
 }
 ```
 
-### Fallback configuration
+### Fallback Configuration
 
-Sometimes your translations may not fully match the user's locale, but this doesn't always mean that your translations cannot be used. In that case, we need the fallback feature.
+Sometimes your translation may not fully match the user's locale, but usually, this doesn't mean that your translations cannot be used. In that case, we need the fallback feature.
 
-By default, if the translations do not match the user's locale, `r18` will fall back to the translation which is the same language and has the highest alphabetical order.
+By default, if the translation does not match the user's locale, `r18` will fallback to the translation which is the same language by the highest alphabetical order.
 
-You can also specify a fallback translation for a language in `config.json` where is the translation files placed.
+You can also specify a fallback translation for a language in `config.json` which placed with other translation files.
 
 eg.
 
