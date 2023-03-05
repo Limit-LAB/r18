@@ -1,6 +1,6 @@
 [package]
 name = "r18"
-version = "0.4.0"
+version = "0.4.1"
 edition = "2021"
 description = "A simply I18n crate for Rust."
 license = "MIT"
@@ -15,7 +15,7 @@ exclude = [".github", "cli", "example", "proc-macros", "trans-support"]
 
 [dependencies]
 mod_use = "0.2"
-once_cell = "1.16"
+once_cell = "1.17.1"
 sys-locale = "0.2"
 oxilangtag = "0.1"
 phf = { version = "0.11.1", features = ["macros"] }
