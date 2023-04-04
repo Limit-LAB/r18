@@ -54,6 +54,6 @@ mod tests {
         r18::set_locale!("zh-HK");
         // zh-CN has higher priority than zh-TW
         // but in this example we specify zh-TW as a fallback on config.json
-        assert_eq!(Some("zh-TW"), r18::locale!());        
+        assert_eq!(Some("zh-TW"), r18::locale!());
     }
 }

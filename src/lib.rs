@@ -1,6 +1,7 @@
 //! # 🔞
 //!
-//! `r18` is a crate intends to simplify the internationalisation of Rust projects.
+//! `r18` is a crate intends to simplify the internationalisation of Rust
+//! projects.
 //!
 //! ## Usage
 //!
@@ -11,7 +12,7 @@
 //! r18 = "*"
 //! ```
 //! Create a `JSON` translation file whose filename follows
-//!  [IETF BCP 47](https://www.wikiwand.com/en/IETF_language_tag) 
+//!  [IETF BCP 47](https://www.wikiwand.com/en/IETF_language_tag)
 //! language tag, like below:
 //!
 //! ```json
@@ -47,20 +48,20 @@
 //!     assert_eq!("Hello, ho-229", r18::tr!("Hello, {}", name));
 //! }
 //! ```
-//! 
+//!
 //! ### Fallback Configuration
-//! 
+//!
 //! Sometimes your translation may not fully match the user's locale,
 //! but usually, this doesn't mean that your translations cannot be used.
 //! In that case, we need the fallback feature.
-//! 
+//!
 //! By default, if the translation does not match the user's locale,
 //! `r18` will fallback to the translation which is the same language
 //! by the highest alphabetical order.
-//! 
+//!
 //! You can also specify a fallback translation for a language in `config.json`
 //! which placed with other translation files.
-//! 
+//!
 //! eg.
 //! ```json
 //! {

@@ -1,6 +1,7 @@
 use std::{collections::HashSet, fs::File, io::Read, path::Path};
 
-use syn::__private::{quote::__private::TokenTree, ToTokens, TokenStream2};
+use proc_macro2::{TokenStream as TokenStream2, TokenTree};
+use quote::ToTokens;
 
 pub fn extract(
     path: impl AsRef<Path>,
@@ -97,7 +98,8 @@ fn extract_tr(stream: TokenStream2, contents: &mut HashSet<String>) -> crate::Re
 
                 if !ret.starts_with('.') || ret.contains(' ') {
                     return Err(format!(
-                        "{}:{} Invalid prefix syntax: prefix must start with '.' and not contain spaces",
+                        "{}:{} Invalid prefix syntax: prefix must start with '.' and not contain \
+                         spaces",
                         pos.line, pos.column
                     )
                     .into());
@@ -143,7 +145,7 @@ fn extract_tr(stream: TokenStream2, contents: &mut HashSet<String>) -> crate::Re
 mod tests {
     use std::collections::HashSet;
 
-    use syn::__private::ToTokens;
+    use quote::ToTokens;
 
     use crate::source::extractor::extract_inner;
 
