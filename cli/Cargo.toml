@@ -4,7 +4,7 @@ version = "0.2.2"
 edition = "2021"
 description = "A CLI tool for crate r18"
 license = "MIT"
-repository = "https://github.com/Limit-IM/r18"
+repository = "https://github.com/Limit-LAB/r18"
 keywords = ["i18n", "l10n", "internationalization"]
 categories = ["localization", "internationalization"]
 readme = "../README.md"
@@ -16,5 +16,5 @@ authors = [
 mod_use = "0.2.1"
 walkdir = "2.3"
 r18-trans-support = { path = "../trans-support", version = "0.4.1" }
-clap = { version = "4.2.1", features = ["derive", "cargo"] }
+clap = { version = "4.2.5", features = ["derive", "cargo"] }
 oxilangtag = "0.1"
