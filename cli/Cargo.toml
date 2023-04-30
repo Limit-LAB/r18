@@ -1,6 +1,6 @@
 [package]
 name = "cargo-r18"
-version = "0.2.2"
+version = "0.2.3"
 edition = "2021"
 description = "A CLI tool for crate r18"
 license = "MIT"
@@ -15,6 +15,6 @@ authors = [
 [dependencies]
 mod_use = "0.2.1"
 walkdir = "2.3"
-r18-trans-support = { path = "../trans-support", version = "0.4.1" }
+r18-trans-support = { path = "../trans-support", version = "0.4.2" }
 clap = { version = "4.2.5", features = ["derive", "cargo"] }
 oxilangtag = "0.1"
