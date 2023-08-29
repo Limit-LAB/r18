@@ -6,6 +6,8 @@
 
 `r18` is a crate intends to simplify the internationalisation of Rust projects.
 
+`MSRV >= 1.70.0 (stable)`
+
 ## Usage
 
 Add `r18` as your project dependency:

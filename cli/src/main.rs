@@ -122,7 +122,7 @@ fn update(root: impl AsRef<Path>, rm_unused: bool) -> Result<()> {
             println!("{} untranslated text(s) were found", todo.len());
             println!("Writing to TODO.{}", file_name);
 
-            translations.extend(todo.clone().into_iter());
+            translations.extend(todo.clone());
         }
 
         if !todo.is_empty() || (rm_unused && !unused.is_empty()) {

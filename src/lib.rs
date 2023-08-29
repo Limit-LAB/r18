@@ -3,6 +3,8 @@
 //! `r18` is a crate intends to simplify the internationalisation of Rust
 //! projects.
 //!
+//! `MSRV >= 1.70.0 (stable)`
+//!
 //! ## Usage
 //!
 //! Add `r18` as your project dependency:
@@ -71,12 +73,10 @@
 //! }
 //! ```
 
-use std::sync::Mutex;
+use std::sync::{Mutex, OnceLock};
 
 #[doc(hidden)]
 pub use dynfmt::{Format, SimpleCurlyFormat};
-#[doc(hidden)]
-pub use once_cell::sync::Lazy;
 #[doc(hidden)]
 pub use oxilangtag::{LanguageTag, LanguageTagParseError};
 #[doc(hidden)]
@@ -94,17 +94,19 @@ pub struct Locale {
 }
 
 #[doc(hidden)]
-pub static CURRENT_LOCALE: Lazy<Mutex<Option<&'static Locale>>> = Lazy::new(|| Mutex::new(None));
+pub static CURRENT_LOCALE: OnceLock<Mutex<Option<&'static Locale>>> = OnceLock::new();
 
 /// Translate content with the locale setting and given prefix.
 ///
 /// We recommend using [`tr!`] instead of [`translate`] for translate your
 /// content.
 pub fn translate(prefix: impl AsRef<str>, content: &str) -> &str {
-    let locale = CURRENT_LOCALE.lock().unwrap();
-    let locale = match *locale {
-        Some(l) => l,
-        None => return content,
+    let locale = CURRENT_LOCALE
+        .get_or_init(|| Mutex::new(None))
+        .lock()
+        .unwrap();
+    let Some(locale) = *locale else {
+        return content;
     };
 
     match locale

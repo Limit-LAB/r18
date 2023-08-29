@@ -141,10 +141,10 @@ fn generate_primary(locales: &LocaleModel) -> proc_macro2::TokenStream {
 
             quote! {
                 #[doc(hidden)]
-                const #code: r18::Locale = r18::Locale {
+                const #code: ::r18::Locale = ::r18::Locale {
                     name: #name,
                     translate: {
-                        use r18::phf;
+                        use ::r18::phf;
                         phf::phf_map! {
                             #( #translation ),*
                         }
@@ -199,7 +199,7 @@ fn generate_lang_matches(
                 quote! { (#primary, _) => Some(&#ident) , }
             });
 
-        exact_matches.chain([fallback_match].into_iter()).collect()
+        exact_matches.chain([fallback_match]).collect()
     } else {
         quote!()
     }
@@ -214,9 +214,10 @@ fn generate_helpers(config: &Config, model: &TranslationModel) -> proc_macro2::T
     quote! {
         #[doc(hidden)]
         pub(crate) fn set_locale(locale: impl AsRef<str>) {
-            *r18::CURRENT_LOCALE
+            *::r18::CURRENT_LOCALE
+                .get_or_init(|| ::std::sync::Mutex::new(None))
                 .lock()
-                .unwrap() = match r18::LanguageTag::parse_and_normalize(locale.as_ref()) {
+                .unwrap() = match ::r18::LanguageTag::parse_and_normalize(locale.as_ref()) {
                     Ok(lang) => {
                         match (lang.primary_language(), lang.region()) {
                             #matches

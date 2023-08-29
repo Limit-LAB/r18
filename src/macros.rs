@@ -24,19 +24,19 @@
 #[macro_export]
 macro_rules! tr {
     ($content:expr) => {
-        r18::translate("", $content)
+        ::r18::translate("", $content)
     };
     ($content:expr, $($arg:expr),+) => {{
-        use r18::{Format, SimpleCurlyFormat};
-        SimpleCurlyFormat.format(r18::translate("", $content), &[$($arg),+])
+        use ::r18::{Format, SimpleCurlyFormat};
+        SimpleCurlyFormat.format(::r18::translate("", $content), &[$($arg),+])
             .unwrap_or_default()
     }};
     ([$prefix:expr] $content:expr) => {
-        r18::translate($prefix, $content)
+        ::r18::translate($prefix, $content)
     };
     ([$prefix:expr] $content:expr, $($arg:expr),+) => {{
-        use r18::{Format, SimpleCurlyFormat};
-        SimpleCurlyFormat.format(r18::translate($prefix, $content), &[$($arg),+])
+        use ::r18::{Format, SimpleCurlyFormat};
+        SimpleCurlyFormat.format(::r18::translate($prefix, $content), &[$($arg),+])
             .unwrap_or_default()
     }};
 }
@@ -68,6 +68,7 @@ macro_rules! set_locale {
 macro_rules! locale {
     () => {
         $crate::CURRENT_LOCALE
+            .get_or_init(|| ::std::sync::Mutex::new(None))
             .lock()
             .unwrap()
             .as_ref()
@@ -79,6 +80,6 @@ macro_rules! locale {
 #[macro_export]
 macro_rules! auto_detect {
     () => {
-        r18::get_locale().map(|l| r18::set_locale!(l))
+        ::r18::get_locale().map(|l| ::r18::set_locale!(l))
     };
 }
