@@ -151,7 +151,7 @@ mod tests {
 
     #[test]
     fn test_extract_inner() {
-        let source = include_str!("../../../example/src/main.rs");
+        let source = include_str!("../../../examples/basic.rs");
 
         let stream = syn::parse_file(source).unwrap().into_token_stream();
         let mut contents = HashSet::new();
