@@ -1,4 +1,6 @@
+#![allow(unexpected_cfgs)]
 #![cfg_attr(feature = "nightly-features", feature(track_path))]
+
 use std::{
     collections::{BTreeMap, HashMap},
     fs::File,
